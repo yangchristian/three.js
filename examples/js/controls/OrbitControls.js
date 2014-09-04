@@ -115,6 +115,12 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.target0 = this.target.clone();
 	this.position0 = this.object.position.clone();
 
+  // orthographic reset (will just be undefined for other cameras)
+  this.top0 = this.object.top;
+  this.left0 = this.object.left;
+  this.right0 = this.object.right;
+  this.bottom0 = this.object.bottom;
+
 	// so camera.up is the orbit axis
 
 	var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
@@ -221,6 +227,14 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		scale /= dollyScale;
 
+    if ( this.object instanceof THREE.OrthographicCamera ) {
+      this.object.left /= dollyScale;
+      this.object.right /= dollyScale;
+      this.object.top /= dollyScale;
+      this.object.bottom /= dollyScale;
+      this.object.updateProjectionMatrix();
+    }
+
 	};
 
 	this.dollyOut = function ( dollyScale ) {
@@ -232,6 +246,14 @@ THREE.OrbitControls = function ( object, domElement ) {
 		}
 
 		scale *= dollyScale;
+
+    if ( this.object instanceof THREE.OrthographicCamera ) {
+      this.object.left *= dollyScale;
+      this.object.right *= dollyScale;
+      this.object.top *= dollyScale;
+      this.object.bottom *= dollyScale;
+      this.object.updateProjectionMatrix();
+    }
 
 	};
 
@@ -314,6 +336,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		this.target.copy( this.target0 );
 		this.object.position.copy( this.position0 );
+
+    this.object.top = this.top0;
+    this.object.left = this.left0;
+    this.object.right = this.right0;
+    this.object.bottom = this.bottom0;
 
 		this.update();
 
